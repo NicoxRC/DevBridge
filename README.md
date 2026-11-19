@@ -11,7 +11,7 @@ supervised by mentors. Working prototype of the Degree Project (UNAD – Group 2
 | API | Python + FastAPI + Strawberry (GraphQL), dependencies managed with **uv** |
 | Database | PostgreSQL (SQLAlchemy) |
 | Authentication | JWT + bcrypt-hashed passwords |
-| Deployment | Railway (backend, frontend and PostgreSQL) |
+| Deployment | Railway (API and PostgreSQL) + Vercel (frontend) |
 
 ## MVP features
 

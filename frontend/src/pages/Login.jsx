@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import { useMutation } from '@apollo/client'
 import { LOGIN } from '../graphql'
 import { useAuth } from '../auth'
+import { useI18n } from '../i18n'
 import { ErrorMsg } from '../components/ui'
 import AuthShell from './AuthShell'
 
@@ -10,6 +11,7 @@ export default function Login() {
   const [form, setForm] = useState({ email: '', password: '' })
   const [loginMut, { loading, error }] = useMutation(LOGIN)
   const { login } = useAuth()
+  const { t } = useI18n()
   const navigate = useNavigate()
 
   const submit = async (e) => {
@@ -23,19 +25,19 @@ export default function Login() {
 
   return (
     <AuthShell>
-      <h2>Log in</h2>
-      <p className="muted">Welcome back to DevBridge</p>
+      <h2>{t('login.title')}</h2>
+      <p className="muted">{t('login.subtitle')}</p>
       <form onSubmit={submit} className="form">
-        <label>Email
+        <label>{t('common.email')}
           <input type="email" required value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} />
         </label>
-        <label>Password
+        <label>{t('common.password')}
           <input type="password" required value={form.password} onChange={(e) => setForm({ ...form, password: e.target.value })} />
         </label>
         <ErrorMsg error={error} />
-        <button className="btn btn-primary btn-lg" disabled={loading}>{loading ? 'Logging in…' : 'Log in'}</button>
+        <button className="btn btn-primary btn-lg" disabled={loading}>{loading ? t('login.submitting') : t('login.submit')}</button>
       </form>
-      <p className="small">Don't have an account? <Link to="/register">Sign up</Link></p>
+      <p className="small">{t('login.noAccount')} <Link to="/register">{t('login.signup')}</Link></p>
     </AuthShell>
   )
 }

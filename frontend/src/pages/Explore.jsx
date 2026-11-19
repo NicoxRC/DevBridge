@@ -2,10 +2,12 @@ import { useState } from 'react'
 import { useQuery } from '@apollo/client'
 import { CATALOGS, PROJECTS } from '../graphql'
 import { LEVELS, MODALITIES } from '../auth'
+import { useI18n } from '../i18n'
 import { ProjectCard } from '../components/ui'
 import Layout from '../components/Layout'
 
 export default function Explore() {
+  const { t } = useI18n()
   const [filters, setFilters] = useState({ search: '', skill: '', level: '', modality: '' })
   const vars = Object.fromEntries(Object.entries(filters).filter(([, v]) => v))
   const { data, loading } = useQuery(PROJECTS, { variables: vars })
@@ -14,24 +16,24 @@ export default function Explore() {
   const projects = data?.projects || []
 
   return (
-    <Layout title="Explore projects" subtitle={`${projects.length} projects available`}>
+    <Layout title={t('nav.explore')} subtitle={t('explore.available', { n: projects.length })}>
       <div className="filters">
-        <input className="search" placeholder="🔍 Search projects…" value={filters.search} onChange={set('search')} />
+        <input className="search" placeholder={t('explore.search')} value={filters.search} onChange={set('search')} />
         <select value={filters.skill} onChange={set('skill')}>
-          <option value="">All technologies</option>
+          <option value="">{t('explore.allTech')}</option>
           {(cat?.catalogs.skills || []).map((s) => <option key={s}>{s}</option>)}
         </select>
         <select value={filters.level} onChange={set('level')}>
-          <option value="">Any level</option>
-          {Object.entries(LEVELS).map(([k, v]) => <option key={k} value={k}>{v}</option>)}
+          <option value="">{t('explore.anyLevel')}</option>
+          {LEVELS.map((k) => <option key={k} value={k}>{t(`level.${k}`)}</option>)}
         </select>
         <select value={filters.modality} onChange={set('modality')}>
-          <option value="">Any modality</option>
-          {Object.entries(MODALITIES).map(([k, v]) => <option key={k} value={k}>{v}</option>)}
+          <option value="">{t('explore.anyModality')}</option>
+          {MODALITIES.map((k) => <option key={k} value={k}>{t(`modality.${k}`)}</option>)}
         </select>
       </div>
-      {loading && !data && <p className="muted">Loading projects…</p>}
-      {!loading && projects.length === 0 && <div className="card empty">No projects match those filters.</div>}
+      {loading && !data && <p className="muted">{t('explore.loading')}</p>}
+      {!loading && projects.length === 0 && <div className="card empty">{t('explore.empty')}</div>}
       <div className="grid-2">
         {projects.map((p) => <ProjectCard key={p.id} project={p} />)}
       </div>

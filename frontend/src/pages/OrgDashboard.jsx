@@ -2,11 +2,12 @@ import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useMutation, useQuery } from '@apollo/client'
 import { MY_PROJECTS, REVIEW_APPLICATION, REVIEW_DELIVERY, SET_PROJECT_STATUS } from '../graphql'
-import { LEVELS } from '../auth'
+import { useI18n } from '../i18n'
 import { ErrorMsg, StatusBadge, Tags } from '../components/ui'
 import Layout, { initials } from '../components/Layout'
 
 function DeliveryReview({ delivery, onDone }) {
+  const { t } = useI18n()
   const [form, setForm] = useState({ status: 'approved', feedback: '', rating: 5 })
   const [review, { error, loading }] = useMutation(REVIEW_DELIVERY)
   if (delivery.status !== 'pending') {
@@ -23,15 +24,15 @@ function DeliveryReview({ delivery, onDone }) {
   return (
     <form className="row review" onSubmit={send}>
       <select value={form.status} onChange={(e) => setForm({ ...form, status: e.target.value })}>
-        <option value="approved">Approve</option>
-        <option value="changes_requested">Request changes</option>
+        <option value="approved">{t('org.approve')}</option>
+        <option value="changes_requested">{t('org.requestChanges')}</option>
       </select>
       <select value={form.rating} onChange={(e) => setForm({ ...form, rating: e.target.value })}>
         {[5, 4, 3, 2, 1].map((n) => <option key={n} value={n}>{n} ★</option>)}
       </select>
-      <input required placeholder="Feedback for the developer" value={form.feedback}
+      <input required placeholder={t('org.feedbackPlaceholder')} value={form.feedback}
         onChange={(e) => setForm({ ...form, feedback: e.target.value })} />
-      <button className="btn btn-primary" disabled={loading}>Submit</button>
+      <button className="btn btn-primary" disabled={loading}>{t('org.send')}</button>
       <ErrorMsg error={error} />
     </form>
   )
@@ -39,6 +40,7 @@ function DeliveryReview({ delivery, onDone }) {
 
 /** Organization dashboard: published projects, applications and delivery review. */
 export default function OrgDashboard() {
+  const { t } = useI18n()
   const { data, refetch } = useQuery(MY_PROJECTS)
   const [reviewApp, reviewState] = useMutation(REVIEW_APPLICATION)
   const [setStatus] = useMutation(SET_PROJECT_STATUS)
@@ -50,33 +52,33 @@ export default function OrgDashboard() {
   }
 
   return (
-    <Layout title="My projects" subtitle="Manage your projects, applications and deliveries"
-      actions={<Link className="btn btn-primary" to="/projects/new">+ Post project</Link>}>
+    <Layout title={t('nav.myProjects')} subtitle={t('org.subtitle')}
+      actions={<Link className="btn btn-primary" to="/projects/new">{t('org.newProject')}</Link>}>
       <div className="kpis">
-        <div className="card kpi"><span className="dot dot-blue" /><b>{projects.filter((p) => p.status === 'published').length}</b><span>Published projects</span></div>
-        <div className="card kpi"><span className="dot dot-orange" /><b>{all.filter((a) => a.status === 'submitted').length}</b><span>Applications to review</span></div>
-        <div className="card kpi"><span className="dot dot-green" /><b>{all.filter((a) => a.status === 'accepted').length}</b><span>Developers in internship</span></div>
-        <div className="card kpi"><span className="dot dot-purple" /><b>{all.flatMap((a) => a.deliveries).filter((d) => d.status === 'pending').length}</b><span>Deliveries to review</span></div>
+        <div className="card kpi"><span className="dot dot-blue" /><b>{projects.filter((p) => p.status === 'published').length}</b><span>{t('org.published')}</span></div>
+        <div className="card kpi"><span className="dot dot-orange" /><b>{all.filter((a) => a.status === 'submitted').length}</b><span>{t('org.toReview')}</span></div>
+        <div className="card kpi"><span className="dot dot-green" /><b>{all.filter((a) => a.status === 'accepted').length}</b><span>{t('org.interns')}</span></div>
+        <div className="card kpi"><span className="dot dot-purple" /><b>{all.flatMap((a) => a.deliveries).filter((d) => d.status === 'pending').length}</b><span>{t('org.deliveriesToReview')}</span></div>
       </div>
       <ErrorMsg error={reviewState.error} />
-      {projects.length === 0 && <div className="card empty">You have not posted any projects yet.</div>}
+      {projects.length === 0 && <div className="card empty">{t('org.empty')}</div>}
       {projects.map((p) => (
         <div key={p.id} className="card">
           <div className="row between">
             <div>
               <h3>{p.title} <StatusBadge status={p.status} /></h3>
-              <div className="muted small">{LEVELS[p.level]} · {p.durationWeeks} weeks · {p.acceptedCount}/{p.slots} slots filled</div>
+              <div className="muted small">{t(`level.${p.level}`)} · {t('common.weeks', { n: p.durationWeeks })} · {t('org.filled', { a: p.acceptedCount, s: p.slots })}</div>
             </div>
             <div className="row">
-              <Link className="btn btn-outline" to={`/projects/${p.id}`}>View</Link>
+              <Link className="btn btn-outline" to={`/projects/${p.id}`}>{t('org.view')}</Link>
               <button className="btn btn-outline" onClick={() => setStatus({ variables: { id: p.id, status: p.status === 'published' ? 'closed' : 'published' } })}>
-                {p.status === 'published' ? 'Close' : 'Reopen'}
+                {p.status === 'published' ? t('org.close') : t('org.reopen')}
               </button>
             </div>
           </div>
           <Tags items={p.skills} />
-          <h4>Applications ({p.applications.length})</h4>
-          {p.applications.length === 0 && <p className="muted small">No applications yet.</p>}
+          <h4>{t('org.applications', { n: p.applications.length })}</h4>
+          {p.applications.length === 0 && <p className="muted small">{t('org.noApplications')}</p>}
           {p.applications.map((a) => (
             <div key={a.id} className="list-item">
               <div className="row between">
@@ -84,7 +86,7 @@ export default function OrgDashboard() {
                   <div className="avatar">{initials(a.developer.name)}</div>
                   <div>
                     <b>{a.developer.name}</b>
-                    <div className="muted small">{LEVELS[a.developer.level]} · {a.developer.city}
+                    <div className="muted small">{t(`level.${a.developer.level}`)} · {a.developer.city}
                       {a.developer.github && <> · <a href={a.developer.github} target="_blank" rel="noreferrer">GitHub</a></>}</div>
                   </div>
                 </div>
@@ -92,8 +94,8 @@ export default function OrgDashboard() {
                   <StatusBadge status={a.status} />
                   {a.status === 'submitted' && (
                     <>
-                      <button className="btn btn-primary btn-sm" onClick={() => decide(a.id, 'accepted')}>Accept</button>
-                      <button className="btn btn-outline btn-sm" onClick={() => decide(a.id, 'rejected')}>Reject</button>
+                      <button className="btn btn-primary btn-sm" onClick={() => decide(a.id, 'accepted')}>{t('org.accept')}</button>
+                      <button className="btn btn-outline btn-sm" onClick={() => decide(a.id, 'rejected')}>{t('org.reject')}</button>
                     </>
                   )}
                 </div>
@@ -102,7 +104,7 @@ export default function OrgDashboard() {
               {a.message && <p className="small">“{a.message}”</p>}
               {a.deliveries.map((d) => (
                 <div key={d.id} className="delivery">
-                  <div><b>{d.title}</b> · <a href={d.link} target="_blank" rel="noreferrer">view delivery</a></div>
+                  <div><b>{d.title}</b> · <a href={d.link} target="_blank" rel="noreferrer">{t('org.viewDelivery')}</a></div>
                   <DeliveryReview delivery={d} onDone={refetch} />
                 </div>
               ))}

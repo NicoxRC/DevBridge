@@ -48,5 +48,6 @@ export function AuthProvider({ children }) {
 
 export const useAuth = () => useContext(AuthContext)
 
-export const LEVELS = { student: 'Student', recent_graduate: 'Recent graduate', junior: 'Junior (0-2 years)' }
-export const MODALITIES = { remote: 'Remote', on_site: 'On-site', hybrid: 'Hybrid' }
+// Stored values; their labels live in i18n.jsx under `level.*` and `modality.*`.
+export const LEVELS = ['student', 'recent_graduate', 'junior']
+export const MODALITIES = ['remote', 'on_site', 'hybrid']

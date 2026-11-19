@@ -1,0 +1,45 @@
+name: back-ci
+
+on:
+  pull_request:
+    branches: [trunk]
+    paths:
+      - 'backend/**'
+      - '.github/workflows/back-ci.yml'
+  push:
+    branches: [trunk]
+    paths:
+      - 'backend/**'
+      - '.github/workflows/back-ci.yml'
+
+concurrency:
+  group: back-ci-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+defaults:
+  run:
+    working-directory: backend
+
+jobs:
+  test:
+    name: back-test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+        with:
+          python-version: '3.12'
+          enable-cache: true
+          cache-dependency-glob: backend/uv.lock
+      - run: uv sync --locked
+      - run: uv run pytest
+
+  build:
+    name: back-build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: docker build -t devbridge-api .

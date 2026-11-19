@@ -1,6 +1,6 @@
 # Contributing to DevBridge
 
-Short version: **branch from `trunk`, make small commits, rebase, open a Pull Request, squash and merge.**
+Short version: **branch from `trunk`, make small commits, rebase, open a Pull Request, rebase and merge.**
 Nobody pushes directly to `trunk` — it is protected and only changes through merged PRs.
 
 To run the project on your machine, see [docs/local-setup.md](docs/local-setup.md).
@@ -71,8 +71,9 @@ still starts (`uv run uvicorn app.main:app --reload` and `npm run dev`) and the 
 
 - Every PR needs an approving review from the repository owner (see `.github/CODEOWNERS`)
   before it can be merged. New commits after the approval require a new review.
-- PRs are merged with **Squash and merge** only: all the PR's commits become a single commit on `trunk`,
-  titled with the PR title. That's why the PR title must read like a good commit message.
+- PRs are merged with **Rebase and merge** only: every commit of the PR is replayed on top of `trunk`,
+  one by one, with no merge commit. That's why each commit must be small and have a clear message —
+  they all end up in `trunk` as they are.
 - If `trunk` moved ahead, rebase again before merging: `git fetch origin && git rebase origin/trunk`,
   then `git push --force-with-lease`.
 - GitHub deletes the remote branch automatically after the merge. Go back to `trunk`

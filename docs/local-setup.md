@@ -69,6 +69,7 @@ After running the seed, every demo user has the password `devbridge123`:
 | Stop the database | `docker compose down` |
 | Reset the database (deletes all data) | `docker compose down -v && docker compose up -d` |
 | Production build of the frontend | `cd frontend && npm run build` |
+| Backend unit tests | `cd backend && uv run pytest` |
 
 ## Troubleshooting
 

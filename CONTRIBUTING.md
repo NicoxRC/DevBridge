@@ -59,7 +59,8 @@ still starts (`uv run uvicorn app.main:app --reload` and `npm run dev`) and the 
 
 ## 4. Merge
 
-- Merge from GitHub once the PR is ready (and approved, if someone reviewed it).
+- Every PR needs an approving review from the repository owner (see `.github/CODEOWNERS`)
+  before it can be merged. New commits after the approval require a new review.
 - If `trunk` moved ahead, update your branch first: `git pull origin trunk`.
 - GitHub deletes the remote branch automatically after the merge. Go back to `trunk`
   and delete your local copy:

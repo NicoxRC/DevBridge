@@ -61,10 +61,11 @@ still starts (`uv run uvicorn app.main:app --reload` and `npm run dev`) and the 
 
 - Merge from GitHub once the PR is ready (and approved, if someone reviewed it).
 - If `trunk` moved ahead, update your branch first: `git pull origin trunk`.
-- After merging, delete the branch and go back to `trunk`:
+- GitHub deletes the remote branch automatically after the merge. Go back to `trunk`
+  and delete your local copy:
 
 ```bash
 git checkout trunk
-git pull
+git pull --prune
 git branch -d feat/project-filters
 ```

@@ -1,5 +1,6 @@
 import { Navigate, Route, Routes } from 'react-router-dom'
 import { useAuth } from './auth'
+import { useI18n } from './i18n'
 import Landing from './pages/Landing'
 import Login from './pages/Login'
 import Register from './pages/Register'
@@ -12,7 +13,8 @@ import NewProject from './pages/NewProject'
 
 function Private({ role, children }) {
   const { user, loading } = useAuth()
-  if (loading) return <div className="center muted">Loading…</div>
+  const { t } = useI18n()
+  if (loading) return <div className="center muted">{t('common.loading')}</div>
   if (!user) return <Navigate to="/login" replace />
   if (role && user.role !== role) return <Navigate to="/dashboard" replace />
   return children

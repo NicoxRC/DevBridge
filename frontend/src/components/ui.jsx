@@ -1,20 +1,21 @@
 import { Link } from 'react-router-dom'
-import { LEVELS, MODALITIES } from '../auth'
+import { useI18n } from '../i18n'
 
-const STATUS = {
-  submitted: ['Submitted', 'badge-blue'],
-  accepted: ['Accepted', 'badge-green'],
-  rejected: ['Rejected', 'badge-gray'],
-  pending: ['Pending review', 'badge-orange'],
-  approved: ['Approved', 'badge-green'],
-  changes_requested: ['Changes requested', 'badge-orange'],
-  published: ['Published', 'badge-green'],
-  closed: ['Closed', 'badge-gray'],
+const STATUS_CLASS = {
+  submitted: 'badge-blue',
+  accepted: 'badge-green',
+  rejected: 'badge-gray',
+  pending: 'badge-orange',
+  approved: 'badge-green',
+  changes_requested: 'badge-orange',
+  published: 'badge-green',
+  closed: 'badge-gray',
 }
 
 export function StatusBadge({ status }) {
-  const [label, cls] = STATUS[status] || [status, 'badge-gray']
-  return <span className={`badge ${cls}`}>{label}</span>
+  const { t } = useI18n()
+  const label = STATUS_CLASS[status] ? t(`status.${status}`) : status
+  return <span className={`badge ${STATUS_CLASS[status] || 'badge-gray'}`}>{label}</span>
 }
 
 export function Tags({ items, highlight = [] }) {
@@ -28,6 +29,7 @@ export function Tags({ items, highlight = [] }) {
 }
 
 export function ProjectCard({ project, score, matched }) {
+  const { t } = useI18n()
   return (
     <div className="card project-card">
       <div className="row between">
@@ -35,19 +37,19 @@ export function ProjectCard({ project, score, matched }) {
           <h3>{project.title}</h3>
           <div className="muted small">{project.organization.name} · {project.organization.city || 'Colombia'}</div>
         </div>
-        {score != null && <span className="badge badge-purple">{score}% match</span>}
+        {score != null && <span className="badge badge-purple">{t('common.match', { n: score })}</span>}
       </div>
       <p className="desc">{project.description}</p>
       <Tags items={project.skills} highlight={matched || []} />
       <div className="meta small muted">
-        <span>{LEVELS[project.level]}</span>
-        <span>{MODALITIES[project.modality]}</span>
-        <span>{project.durationWeeks} weeks</span>
-        <span>{project.hoursPerWeek} h/week</span>
-        <span>{Math.max(project.slots - project.acceptedCount, 0)} slots</span>
+        <span>{t(`level.${project.level}`)}</span>
+        <span>{t(`modality.${project.modality}`)}</span>
+        <span>{t('common.weeks', { n: project.durationWeeks })}</span>
+        <span>{t('common.hoursWeek', { n: project.hoursPerWeek })}</span>
+        <span>{t('common.slots', { n: Math.max(project.slots - project.acceptedCount, 0) })}</span>
       </div>
       <div className="row end">
-        <Link className="btn btn-primary" to={`/projects/${project.id}`}>View details</Link>
+        <Link className="btn btn-primary" to={`/projects/${project.id}`}>{t('common.viewDetails')}</Link>
       </div>
     </div>
   )
@@ -69,7 +71,8 @@ export function ChipPicker({ options, value, onChange, green }) {
 }
 
 export function ErrorMsg({ error }) {
+  const { translateError } = useI18n()
   if (!error) return null
   const msg = error.graphQLErrors?.[0]?.message || error.message
-  return <div className="alert">{msg}</div>
+  return <div className="alert">{translateError(msg)}</div>
 }

@@ -1,5 +1,6 @@
 import { Link, NavLink } from 'react-router-dom'
 import { useAuth } from '../auth'
+import { LanguageSwitch, useI18n } from '../i18n'
 
 export function Logo({ dark }) {
   return (
@@ -15,6 +16,7 @@ export const initials = (name = '') =>
 /** Layout with a dark sidebar, as in the Figma mockup. */
 export default function Layout({ title, subtitle, actions, children }) {
   const { user, logout } = useAuth()
+  const { t } = useI18n()
   const isOrg = user?.role === 'organization'
 
   return (
@@ -26,30 +28,33 @@ export default function Layout({ title, subtitle, actions, children }) {
             <div className="avatar">{initials(user.name)}</div>
             <div>
               <div className="sidebar-name">{user.name}</div>
-              <div className="sidebar-role">{isOrg ? 'Company / institution' : 'Junior developer'}</div>
+              <div className="sidebar-role">{isOrg ? t('nav.orgRole') : t('nav.devRole')}</div>
             </div>
           </div>
         )}
         <nav className="sidebar-nav">
           {user ? (
             <>
-              <NavLink to="/dashboard">{isOrg ? 'My projects' : 'Dashboard'}</NavLink>
+              <NavLink to="/dashboard">{isOrg ? t('nav.myProjects') : t('nav.dashboard')}</NavLink>
               {isOrg ? (
-                <NavLink to="/projects/new">Post project</NavLink>
+                <NavLink to="/projects/new">{t('nav.postProject')}</NavLink>
               ) : (
-                <NavLink to="/projects" end>Explore projects</NavLink>
+                <NavLink to="/projects" end>{t('nav.explore')}</NavLink>
               )}
-              <NavLink to="/profile">My profile</NavLink>
+              <NavLink to="/profile">{t('nav.myProfile')}</NavLink>
             </>
           ) : (
             <>
-              <NavLink to="/projects" end>Explore projects</NavLink>
-              <NavLink to="/login">Log in</NavLink>
-              <NavLink to="/register">Sign up</NavLink>
+              <NavLink to="/projects" end>{t('nav.explore')}</NavLink>
+              <NavLink to="/login">{t('nav.login')}</NavLink>
+              <NavLink to="/register">{t('nav.signup')}</NavLink>
             </>
           )}
         </nav>
-        {user && <button className="sidebar-logout" onClick={logout}>↩ Log out</button>}
+        <div className="sidebar-footer">
+          <LanguageSwitch dark />
+          {user && <button className="sidebar-logout" onClick={logout}>{t('nav.logout')}</button>}
+        </div>
       </aside>
       <main className="main">
         <header className="topbar">

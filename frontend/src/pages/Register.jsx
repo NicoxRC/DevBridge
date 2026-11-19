@@ -3,6 +3,7 @@ import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import { useMutation } from '@apollo/client'
 import { REGISTER } from '../graphql'
 import { useAuth } from '../auth'
+import { useI18n } from '../i18n'
 import { ErrorMsg } from '../components/ui'
 import AuthShell from './AuthShell'
 
@@ -15,6 +16,7 @@ export default function Register() {
   })
   const [registerMut, { loading, error }] = useMutation(REGISTER)
   const { login } = useAuth()
+  const { t } = useI18n()
   const navigate = useNavigate()
   const set = (k) => (e) => setForm({ ...form, [k]: e.target.type === 'checkbox' ? e.target.checked : e.target.value })
 
@@ -29,37 +31,36 @@ export default function Register() {
 
   return (
     <AuthShell>
-      <h2>Create your account</h2>
-      <p className="muted">Step 1 of 2 · Account</p>
+      <h2>{t('register.title')}</h2>
+      <p className="muted">{t('register.step')}</p>
       <form onSubmit={submit} className="form">
         <div className="segmented">
           <button type="button" className={form.role === 'developer' ? 'on' : ''} onClick={() => setForm({ ...form, role: 'developer' })}>
-            I'm a developer
+            {t('register.dev')}
           </button>
           <button type="button" className={form.role === 'organization' ? 'on' : ''} onClick={() => setForm({ ...form, role: 'organization' })}>
-            I'm a company / institution
+            {t('register.org')}
           </button>
         </div>
-        <label>{form.role === 'organization' ? 'Organization name' : 'Full name'}
+        <label>{form.role === 'organization' ? t('common.orgName') : t('common.fullName')}
           <input required value={form.name} onChange={set('name')} />
         </label>
-        <label>Email
+        <label>{t('common.email')}
           <input type="email" required value={form.email} onChange={set('email')} />
         </label>
-        <label>Password (at least 8 characters)
+        <label>{t('register.password')}
           <input type="password" required minLength={8} value={form.password} onChange={set('password')} />
         </label>
         <label className="consent">
           <input type="checkbox" checked={form.dataConsent} onChange={set('dataConsent')} />
-          <span>I authorize the processing of my personal data in accordance with Law 1581 of 2012 and the DevBridge
-            privacy policy.</span>
+          <span>{t('register.consent')}</span>
         </label>
         <ErrorMsg error={error} />
         <button className="btn btn-primary btn-lg" disabled={loading || !form.dataConsent}>
-          {loading ? 'Creating account…' : 'Continue →'}
+          {loading ? t('register.submitting') : t('register.submit')}
         </button>
       </form>
-      <p className="small">Already have an account? <Link to="/login">Log in</Link></p>
+      <p className="small">{t('register.hasAccount')} <Link to="/login">{t('register.login')}</Link></p>
     </AuthShell>
   )
 }

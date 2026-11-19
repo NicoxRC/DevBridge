@@ -174,3 +174,15 @@ input:focus, select:focus, textarea:focus { outline: 2px solid var(--primary); b
   .hero { padding: 30px 20px; }
   .hero h1 { font-size: 36px; }
 }
+
+/* Language switch */
+.lang-switch { display: inline-flex; border: 1px solid var(--border); border-radius: 8px; overflow: hidden; }
+.lang-switch button { background: #fff; border: 0; padding: 5px 10px; font: inherit; font-size: 12px; font-weight: 600; color: var(--text-2); cursor: pointer; }
+.lang-switch button.on { background: var(--primary); color: #fff; }
+.lang-switch-dark { border-color: var(--navy-2); }
+.lang-switch-dark button { background: transparent; color: #b2c2e0; }
+.sidebar-footer { margin-top: auto; display: flex; flex-direction: column; gap: 6px; padding: 0 14px; }
+.sidebar-footer .lang-switch { align-self: flex-start; }
+.sidebar-footer .sidebar-logout { margin-top: 0; padding: 10px 0; }
+.auth-main { position: relative; }
+.auth-lang { position: absolute; top: 20px; right: 20px; }

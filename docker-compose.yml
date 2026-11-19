@@ -1,4 +1,4 @@
-# Base de datos PostgreSQL para desarrollo local: docker compose up -d
+# PostgreSQL database for local development: docker compose up -d
 services:
   db:
     image: postgres:16

@@ -11,8 +11,8 @@ export default function NewProject() {
   const { data: cat } = useQuery(CATALOGS)
   const [create, { loading, error }] = useMutation(CREATE_PROJECT)
   const [form, setForm] = useState({
-    title: '', description: '', skills: [], level: 'estudiante', hoursPerWeek: 10,
-    durationWeeks: 8, modality: 'remoto', slots: 2, mentorName: '',
+    title: '', description: '', skills: [], level: 'student', hoursPerWeek: 10,
+    durationWeeks: 8, modality: 'remote', slots: 2, mentorName: '',
   })
   const set = (k) => (e) => setForm({ ...form, [k]: e.target.value })
 
@@ -21,48 +21,48 @@ export default function NewProject() {
     try {
       const input = { ...form, hoursPerWeek: +form.hoursPerWeek, durationWeeks: +form.durationWeeks, slots: +form.slots }
       await create({ variables: { input } })
-      navigate('/panel')
+      navigate('/dashboard')
     } catch { /* ErrorMsg */ }
   }
 
   return (
-    <Layout title="Publicar proyecto" subtitle="Describe el proyecto real que un desarrollador junior realizará con supervisión">
+    <Layout title="Post project" subtitle="Describe the real project a junior developer will work on under supervision">
       <form className="card form form-grid" onSubmit={submit}>
-        <label className="span-2">Título del proyecto
-          <input required value={form.title} onChange={set('title')} placeholder="API REST para E-commerce" />
+        <label className="span-2">Project title
+          <input required value={form.title} onChange={set('title')} placeholder="E-commerce REST API" />
         </label>
-        <label className="span-2">Descripción
+        <label className="span-2">Description
           <textarea required rows={4} value={form.description} onChange={set('description')} />
         </label>
         <div className="span-2">
-          <div className="label">Tecnologías requeridas</div>
+          <div className="label">Required technologies</div>
           <ChipPicker options={cat?.catalogs.skills || []} value={form.skills} onChange={(v) => setForm({ ...form, skills: v })} />
         </div>
-        <label>Nivel requerido
+        <label>Required level
           <select value={form.level} onChange={set('level')}>
             {Object.entries(LEVELS).map(([k, v]) => <option key={k} value={k}>{v}</option>)}
           </select>
         </label>
-        <label>Modalidad
+        <label>Modality
           <select value={form.modality} onChange={set('modality')}>
             {Object.entries(MODALITIES).map(([k, v]) => <option key={k} value={k}>{v}</option>)}
           </select>
         </label>
-        <label>Duración (semanas)
+        <label>Duration (weeks)
           <input type="number" min={1} value={form.durationWeeks} onChange={set('durationWeeks')} />
         </label>
-        <label>Dedicación (horas por semana)
+        <label>Commitment (hours per week)
           <input type="number" min={1} value={form.hoursPerWeek} onChange={set('hoursPerWeek')} />
         </label>
-        <label>Cupos
+        <label>Slots
           <input type="number" min={1} value={form.slots} onChange={set('slots')} />
         </label>
-        <label>Mentor asignado
-          <input value={form.mentorName} onChange={set('mentorName')} placeholder="Nombre del desarrollador senior" />
+        <label>Assigned mentor
+          <input value={form.mentorName} onChange={set('mentorName')} placeholder="Senior developer's name" />
         </label>
         <div className="span-2 row end">
           <ErrorMsg error={error} />
-          <button className="btn btn-primary" disabled={loading || form.skills.length === 0}>Publicar proyecto</button>
+          <button className="btn btn-primary" disabled={loading || form.skills.length === 0}>Post project</button>
         </div>
       </form>
     </Layout>

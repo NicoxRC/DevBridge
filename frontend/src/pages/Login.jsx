@@ -17,25 +17,25 @@ export default function Login() {
     try {
       const { data } = await loginMut({ variables: form })
       await login(data.login.token, data.login.user)
-      navigate('/panel')
-    } catch { /* el error se muestra con ErrorMsg */ }
+      navigate('/dashboard')
+    } catch { /* the error is shown with ErrorMsg */ }
   }
 
   return (
     <AuthShell>
-      <h2>Iniciar sesión</h2>
-      <p className="muted">Bienvenido de nuevo a DevBridge</p>
+      <h2>Log in</h2>
+      <p className="muted">Welcome back to DevBridge</p>
       <form onSubmit={submit} className="form">
-        <label>Correo electrónico
+        <label>Email
           <input type="email" required value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} />
         </label>
-        <label>Contraseña
+        <label>Password
           <input type="password" required value={form.password} onChange={(e) => setForm({ ...form, password: e.target.value })} />
         </label>
         <ErrorMsg error={error} />
-        <button className="btn btn-primary btn-lg" disabled={loading}>{loading ? 'Ingresando…' : 'Ingresar'}</button>
+        <button className="btn btn-primary btn-lg" disabled={loading}>{loading ? 'Logging in…' : 'Log in'}</button>
       </form>
-      <p className="small">¿No tienes cuenta? <Link to="/registro">Regístrate</Link></p>
+      <p className="small">Don't have an account? <Link to="/register">Sign up</Link></p>
     </AuthShell>
   )
 }

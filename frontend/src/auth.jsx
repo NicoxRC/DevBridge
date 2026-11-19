@@ -15,7 +15,7 @@ export function AuthProvider({ children }) {
     try {
       const { data } = await client.query({ query: ME, fetchPolicy: 'network-only' })
       setUser(data.me)
-      if (!data.me) localStorage.removeItem(KEY) // token vencido o inválido
+      if (!data.me) localStorage.removeItem(KEY) // expired or invalid token
     } catch {
       setUser(null)
     } finally {
@@ -25,7 +25,7 @@ export function AuthProvider({ children }) {
 
   useEffect(() => { refetch() }, [refetch])
 
-  // Se llama con la respuesta de las mutaciones login/register (token + usuario).
+  // Called with the response of the login/register mutations (token + user).
   const login = async (token, me) => {
     localStorage.setItem(KEY, token)
     await client.resetStore()
@@ -48,5 +48,5 @@ export function AuthProvider({ children }) {
 
 export const useAuth = () => useContext(AuthContext)
 
-export const LEVELS = { estudiante: 'Estudiante', recien_graduado: 'Recién graduado', junior: 'Junior (0-2 años)' }
-export const MODALITIES = { remoto: 'Remoto', presencial: 'Presencial', hibrido: 'Híbrido' }
+export const LEVELS = { student: 'Student', recent_graduate: 'Recent graduate', junior: 'Junior (0-2 years)' }
+export const MODALITIES = { remote: 'Remote', on_site: 'On-site', hybrid: 'Hybrid' }

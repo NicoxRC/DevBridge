@@ -1,14 +1,14 @@
-"""Matching del MVP.
+"""MVP matching.
 
-Versión simple y explicable: filtra los proyectos que el desarrollador no puede tomar
-(nivel requerido mayor o disponibilidad semanal insuficiente) y ordena el resto por el
-porcentaje de habilidades requeridas que el desarrollador ya maneja.
-La versión con embeddings + pgvector descrita en el documento queda como trabajo futuro.
+Simple, explainable version: filters out projects the developer cannot take
+(higher required level or insufficient weekly availability) and sorts the rest by the
+percentage of required skills the developer already has.
+The embeddings + pgvector version described in the document is left as future work.
 """
 
 from .models import Project, User
 
-LEVELS = {"estudiante": 0, "recien_graduado": 1, "junior": 2}
+LEVELS = {"student": 0, "recent_graduate": 1, "junior": 2}
 
 
 def _norm(items: list[str]) -> set[str]:
@@ -16,7 +16,7 @@ def _norm(items: list[str]) -> set[str]:
 
 
 def score(dev: User, project: Project) -> tuple[int, list[str]] | None:
-    """Devuelve (puntaje 0-100, habilidades coincidentes) o None si el proyecto se excluye."""
+    """Return (score 0-100, matched skills) or None if the project is excluded."""
     if LEVELS.get(dev.level, 0) < LEVELS.get(project.level, 0):
         return None
     if (dev.availability_hours or 0) < (project.hours_per_week or 0):

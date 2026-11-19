@@ -7,7 +7,7 @@ from strawberry.fastapi import GraphQLRouter
 from .db import Base, engine
 from .schema import get_context, schema
 
-# Crea las tablas si no existen (suficiente para el MVP; a futuro, migraciones con Alembic).
+# Create tables if they do not exist (enough for the MVP; Alembic migrations in the future).
 Base.metadata.create_all(engine)
 
 app = FastAPI(title="DevBridge API", version="0.1.0")

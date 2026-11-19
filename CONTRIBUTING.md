@@ -1,6 +1,6 @@
 # Contributing to DevBridge
 
-Short version: **branch from `trunk`, make small commits, open a Pull Request.**
+Short version: **branch from `trunk`, make small commits, rebase, open a Pull Request, squash and merge.**
 Nobody pushes directly to `trunk` — it is protected and only changes through merged PRs.
 
 To run the project on your machine, see [docs/local-setup.md](docs/local-setup.md).
@@ -40,10 +40,20 @@ git add frontend/src/pages/Explore.jsx
 git commit -m "Add level filter to Explore page"
 ```
 
-## 3. Open a Pull Request
+## 3. Rebase and open a Pull Request
+
+Before pushing, rebase your branch on the latest `trunk` so it applies cleanly on top of it
+(never merge `trunk` into your branch):
 
 ```bash
+git fetch origin
+git rebase origin/trunk          # fix conflicts, `git add`, then `git rebase --continue`
 git push -u origin feat/project-filters
+gh pr create --base trunk --fill   # or open the link GitHub prints
+```
+
+If you already pushed the branch, push the rebased version with
+`git push --force-with-lease` (only on your own branch, never on `trunk`).
 gh pr create --base trunk --fill   # or open the link GitHub prints
 ```
 
@@ -61,7 +71,10 @@ still starts (`uv run uvicorn app.main:app --reload` and `npm run dev`) and the 
 
 - Every PR needs an approving review from the repository owner (see `.github/CODEOWNERS`)
   before it can be merged. New commits after the approval require a new review.
-- If `trunk` moved ahead, update your branch first: `git pull origin trunk`.
+- PRs are merged with **Squash and merge** only: all the PR's commits become a single commit on `trunk`,
+  titled with the PR title. That's why the PR title must read like a good commit message.
+- If `trunk` moved ahead, rebase again before merging: `git fetch origin && git rebase origin/trunk`,
+  then `git push --force-with-lease`.
 - GitHub deletes the remote branch automatically after the merge. Go back to `trunk`
   and delete your local copy:
 

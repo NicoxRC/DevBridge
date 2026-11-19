@@ -12,7 +12,7 @@ export function Logo({ dark }) {
 export const initials = (name = '') =>
   name.split(' ').filter(Boolean).slice(0, 2).map((w) => w[0].toUpperCase()).join('')
 
-/** Layout con barra lateral oscura, como en el mockup de Figma. */
+/** Layout with a dark sidebar, as in the Figma mockup. */
 export default function Layout({ title, subtitle, actions, children }) {
   const { user, logout } = useAuth()
   const isOrg = user?.role === 'organization'
@@ -26,30 +26,30 @@ export default function Layout({ title, subtitle, actions, children }) {
             <div className="avatar">{initials(user.name)}</div>
             <div>
               <div className="sidebar-name">{user.name}</div>
-              <div className="sidebar-role">{isOrg ? 'Empresa / institución' : 'Desarrollador junior'}</div>
+              <div className="sidebar-role">{isOrg ? 'Company / institution' : 'Junior developer'}</div>
             </div>
           </div>
         )}
         <nav className="sidebar-nav">
           {user ? (
             <>
-              <NavLink to="/panel">{isOrg ? 'Mis proyectos' : 'Dashboard'}</NavLink>
+              <NavLink to="/dashboard">{isOrg ? 'My projects' : 'Dashboard'}</NavLink>
               {isOrg ? (
-                <NavLink to="/proyectos-nuevo">Publicar proyecto</NavLink>
+                <NavLink to="/projects/new">Post project</NavLink>
               ) : (
-                <NavLink to="/proyectos" end>Explorar proyectos</NavLink>
+                <NavLink to="/projects" end>Explore projects</NavLink>
               )}
-              <NavLink to="/perfil">Mi perfil</NavLink>
+              <NavLink to="/profile">My profile</NavLink>
             </>
           ) : (
             <>
-              <NavLink to="/proyectos" end>Explorar proyectos</NavLink>
-              <NavLink to="/login">Iniciar sesión</NavLink>
-              <NavLink to="/registro">Crear cuenta</NavLink>
+              <NavLink to="/projects" end>Explore projects</NavLink>
+              <NavLink to="/login">Log in</NavLink>
+              <NavLink to="/register">Sign up</NavLink>
             </>
           )}
         </nav>
-        {user && <button className="sidebar-logout" onClick={logout}>↩ Cerrar sesión</button>}
+        {user && <button className="sidebar-logout" onClick={logout}>↩ Log out</button>}
       </aside>
       <main className="main">
         <header className="topbar">

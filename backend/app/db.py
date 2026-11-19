@@ -6,7 +6,7 @@ from sqlalchemy.orm import DeclarativeBase, sessionmaker
 
 def _database_url() -> str:
     url = os.getenv("DATABASE_URL", "postgresql+psycopg://devbridge:devbridge@localhost:5432/devbridge")
-    # Railway entrega la URL como postgres:// o postgresql://; SQLAlchemy necesita el driver explícito.
+    # Railway provides the URL as postgres:// or postgresql://; SQLAlchemy needs the explicit driver.
     if url.startswith("postgres://"):
         url = url.replace("postgres://", "postgresql+psycopg://", 1)
     elif url.startswith("postgresql://"):

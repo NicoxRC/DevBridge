@@ -2,14 +2,14 @@ import { Link } from 'react-router-dom'
 import { LEVELS, MODALITIES } from '../auth'
 
 const STATUS = {
-  enviada: ['Enviada', 'badge-blue'],
-  aceptada: ['Aceptada', 'badge-green'],
-  rechazada: ['Rechazada', 'badge-gray'],
-  pendiente: ['Pendiente de revisión', 'badge-orange'],
-  aprobada: ['Aprobada', 'badge-green'],
-  ajustes: ['Con ajustes', 'badge-orange'],
-  publicado: ['Publicado', 'badge-green'],
-  cerrado: ['Cerrado', 'badge-gray'],
+  submitted: ['Submitted', 'badge-blue'],
+  accepted: ['Accepted', 'badge-green'],
+  rejected: ['Rejected', 'badge-gray'],
+  pending: ['Pending review', 'badge-orange'],
+  approved: ['Approved', 'badge-green'],
+  changes_requested: ['Changes requested', 'badge-orange'],
+  published: ['Published', 'badge-green'],
+  closed: ['Closed', 'badge-gray'],
 }
 
 export function StatusBadge({ status }) {
@@ -35,25 +35,25 @@ export function ProjectCard({ project, score, matched }) {
           <h3>{project.title}</h3>
           <div className="muted small">{project.organization.name} · {project.organization.city || 'Colombia'}</div>
         </div>
-        {score != null && <span className="badge badge-purple">{score}% afinidad</span>}
+        {score != null && <span className="badge badge-purple">{score}% match</span>}
       </div>
       <p className="desc">{project.description}</p>
       <Tags items={project.skills} highlight={matched || []} />
       <div className="meta small muted">
         <span>{LEVELS[project.level]}</span>
         <span>{MODALITIES[project.modality]}</span>
-        <span>{project.durationWeeks} semanas</span>
-        <span>{project.hoursPerWeek} h/semana</span>
-        <span>{Math.max(project.slots - project.acceptedCount, 0)} cupos</span>
+        <span>{project.durationWeeks} weeks</span>
+        <span>{project.hoursPerWeek} h/week</span>
+        <span>{Math.max(project.slots - project.acceptedCount, 0)} slots</span>
       </div>
       <div className="row end">
-        <Link className="btn btn-primary" to={`/proyectos/${project.id}`}>Ver detalle</Link>
+        <Link className="btn btn-primary" to={`/projects/${project.id}`}>View details</Link>
       </div>
     </div>
   )
 }
 
-/** Selector de etiquetas tipo "chips" (habilidades, intereses). */
+/** Chip-style tag picker (skills, interests). */
 export function ChipPicker({ options, value, onChange, green }) {
   const toggle = (o) => onChange(value.includes(o) ? value.filter((v) => v !== o) : [...value, o])
   return (

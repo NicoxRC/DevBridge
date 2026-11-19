@@ -16,8 +16,8 @@ export default function ProjectDetail() {
   const [submit, submitState] = useMutation(SUBMIT_DELIVERY)
 
   const p = data?.project
-  if (loading && !p) return <Layout title="Cargando…" />
-  if (!p) return <Layout title="Proyecto no encontrado" />
+  if (loading && !p) return <Layout title="Loading…" />
+  if (!p) return <Layout title="Project not found" />
   const app = p.myApplication
   const free = Math.max(p.slots - p.acceptedCount, 0)
 
@@ -34,7 +34,7 @@ export default function ProjectDetail() {
   }
 
   return (
-    <Layout title={p.title} subtitle={<Link to="/proyectos">← Volver a proyectos</Link>}
+    <Layout title={p.title} subtitle={<Link to="/projects">← Back to projects</Link>}
       actions={<StatusBadge status={p.status} />}>
       <div className="detail">
         <div className="col">
@@ -49,33 +49,33 @@ export default function ProjectDetail() {
             <p>{p.description}</p>
             <Tags items={p.skills} highlight={user?.skills || []} />
             <div className="meta small muted">
-              <span>Nivel: {LEVELS[p.level]}</span>
-              <span>Duración: {p.durationWeeks} semanas</span>
-              <span>Dedicación: {p.hoursPerWeek} h/semana</span>
-              <span>Cupos libres: {free} de {p.slots}</span>
+              <span>Level: {LEVELS[p.level]}</span>
+              <span>Duration: {p.durationWeeks} weeks</span>
+              <span>Commitment: {p.hoursPerWeek} h/week</span>
+              <span>Open slots: {free} of {p.slots}</span>
             </div>
           </div>
 
-          {app?.status === 'aceptada' && (
+          {app?.status === 'accepted' && (
             <div className="card">
-              <h3>Entregas por sprint</h3>
-              <p className="muted small">Comparte el enlace de tu repositorio en cada sprint para que tu mentor lo revise.</p>
-              {app.deliveries.length === 0 && <p className="muted">Aún no has registrado entregas.</p>}
+              <h3>Sprint deliveries</h3>
+              <p className="muted small">Share your repository link each sprint so your mentor can review it.</p>
+              {app.deliveries.length === 0 && <p className="muted">You have not submitted any deliveries yet.</p>}
               {app.deliveries.map((d) => (
                 <div key={d.id} className="list-item">
                   <div className="row between">
-                    <div><b>{d.title}</b> · <a href={d.link} target="_blank" rel="noreferrer">ver enlace</a></div>
+                    <div><b>{d.title}</b> · <a href={d.link} target="_blank" rel="noreferrer">view link</a></div>
                     <StatusBadge status={d.status} />
                   </div>
                   {d.feedback && <div className="feedback">💬 {d.feedback} {d.rating && <b>· {'★'.repeat(d.rating)}</b>}</div>}
                 </div>
               ))}
               <form className="row" onSubmit={doDeliver}>
-                <input required placeholder="Ej.: Sprint 1 – Módulo de productos" value={delivery.title}
+                <input required placeholder="E.g.: Sprint 1 – Products module" value={delivery.title}
                   onChange={(e) => setDelivery({ ...delivery, title: e.target.value })} />
                 <input required type="url" placeholder="https://github.com/…" value={delivery.link}
                   onChange={(e) => setDelivery({ ...delivery, link: e.target.value })} />
-                <button className="btn btn-primary">Entregar avance</button>
+                <button className="btn btn-primary">Submit delivery</button>
               </form>
               <ErrorMsg error={submitState.error} />
             </div>
@@ -84,38 +84,38 @@ export default function ProjectDetail() {
 
         <div className="col">
           <div className="card">
-            <div className="muted small">Mentor del proyecto</div>
+            <div className="muted small">Project mentor</div>
             <div className="row">
               <div className="avatar avatar-green">{initials(p.mentorName || 'M')}</div>
-              <div><b>{p.mentorName || 'Por asignar'}</b><div className="muted small">{p.organization.name}</div></div>
+              <div><b>{p.mentorName || 'To be assigned'}</b><div className="muted small">{p.organization.name}</div></div>
             </div>
           </div>
 
           <div className="card cta-card">
             {!user && (
               <>
-                <b>¿Te interesa este proyecto?</b>
-                <p className="small">Crea tu cuenta gratis para postularte.</p>
-                <Link className="btn btn-light" to="/registro">Registrarme</Link>
+                <b>Interested in this project?</b>
+                <p className="small">Create a free account to apply.</p>
+                <Link className="btn btn-light" to="/register">Sign up</Link>
               </>
             )}
-            {user?.role === 'organization' && <p>Las organizaciones gestionan sus proyectos desde su panel.</p>}
+            {user?.role === 'organization' && <p>Organizations manage their projects from their dashboard.</p>}
             {user?.role === 'developer' && !app && (
               <>
-                <b>Postúlate a este proyecto</b>
-                <textarea rows={3} placeholder="Cuéntale a la empresa por qué te interesa (opcional)"
+                <b>Apply to this project</b>
+                <textarea rows={3} placeholder="Tell the company why you are interested (optional)"
                   value={message} onChange={(e) => setMessage(e.target.value)} />
                 <button className="btn btn-light" onClick={doApply} disabled={applyState.loading || free === 0}>
-                  {free === 0 ? 'Sin cupos' : 'Postularme →'}
+                  {free === 0 ? 'No slots left' : 'Apply →'}
                 </button>
                 <ErrorMsg error={applyState.error} />
               </>
             )}
             {user?.role === 'developer' && app && (
               <>
-                <b>Tu postulación</b>
+                <b>Your application</b>
                 <div><StatusBadge status={app.status} /></div>
-                {app.status === 'enviada' && <p className="small">La organización revisará tu perfil pronto.</p>}
+                {app.status === 'submitted' && <p className="small">The organization will review your profile soon.</p>}
               </>
             )}
           </div>

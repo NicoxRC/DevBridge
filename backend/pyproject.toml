@@ -1,7 +1,7 @@
 [project]
 name = "devbridge-api"
 version = "0.1.0"
-description = "API GraphQL del MVP de DevBridge"
+description = "DevBridge MVP GraphQL API"
 requires-python = ">=3.12"
 dependencies = [
     "fastapi>=0.115",

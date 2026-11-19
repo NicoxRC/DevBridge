@@ -4,7 +4,7 @@ from datetime import datetime, timedelta, timezone
 import bcrypt
 import jwt
 
-SECRET = os.getenv("JWT_SECRET", "cambia-este-secreto-en-produccion")
+SECRET = os.getenv("JWT_SECRET", "change-this-secret-in-production")
 EXPIRES_HOURS = 24
 
 

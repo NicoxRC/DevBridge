@@ -17,10 +17,10 @@ SKILLS_CATALOG = [
     "HTML/CSS", "PostgreSQL", "MongoDB", "Docker", "Git", "REST APIs", "GraphQL",
     "React Native", "Flutter", "AWS", "Testing", "Figma",
 ]
-INTERESTS_CATALOG = ["Backend / APIs", "Frontend / UI", "Full Stack", "Mobile", "Data / IA", "DevOps"]
+INTERESTS_CATALOG = ["Backend / APIs", "Frontend / UI", "Full Stack", "Mobile", "Data / AI", "DevOps"]
 
 
-# --------------------------------------------------------------------------- contexto
+# --------------------------------------------------------------------------- context
 class Context(BaseContext):
     def __init__(self):
         super().__init__()
@@ -38,9 +38,9 @@ class Context(BaseContext):
 
     def require(self, role: str | None = None) -> m.User:
         if not self.user:
-            raise Exception("Debes iniciar sesión.")
+            raise Exception("You must be logged in.")
         if role and self.user.role != role:
-            raise Exception("No tienes permiso para esta acción.")
+            raise Exception("You do not have permission for this action.")
         return self.user
 
 
@@ -52,7 +52,7 @@ async def get_context():
         ctx.db.close()
 
 
-# --------------------------------------------------------------------------- tipos
+# --------------------------------------------------------------------------- types
 @strawberry.type
 class Organization:
     id: int
@@ -137,7 +137,7 @@ class Project:
 
     @strawberry.field
     def accepted_count(self) -> int:
-        return sum(1 for a in self._obj.applications if a.status == "aceptada")
+        return sum(1 for a in self._obj.applications if a.status == "accepted")
 
     @strawberry.field
     def my_application(self, info: Info) -> Optional[Application]:
@@ -151,7 +151,7 @@ class Project:
 
     @strawberry.field
     def applications(self, info: Info) -> list[Application]:
-        """Solo la organización dueña del proyecto ve las postulaciones."""
+        """Only the organization that owns the project can see its applications."""
         user = info.context.user
         if not user or user.id != self._obj.org_id:
             return []
@@ -220,7 +220,7 @@ class ProfileInput:
     name: str
     city: str = ""
     bio: str = ""
-    level: str = "estudiante"
+    level: str = "student"
     skills: list[str] = strawberry.field(default_factory=list)
     interests: list[str] = strawberry.field(default_factory=list)
     availability_hours: int = 10
@@ -232,10 +232,10 @@ class ProjectInput:
     title: str
     description: str
     skills: list[str]
-    level: str = "estudiante"
+    level: str = "student"
     hours_per_week: int = 10
     duration_weeks: int = 8
-    modality: str = "remoto"
+    modality: str = "remote"
     slots: int = 2
     mentor_name: str = ""
 
@@ -252,10 +252,10 @@ class Query:
     def catalogs(self) -> Catalogs:
         return Catalogs(skills=SKILLS_CATALOG, interests=INTERESTS_CATALOG)
 
-    @strawberry.field(description="Listado público de proyectos publicados (no requiere sesión).")
+    @strawberry.field(description="Public list of published projects (no login required).")
     def projects(self, info: Info, search: Optional[str] = None, skill: Optional[str] = None,
                  level: Optional[str] = None, modality: Optional[str] = None) -> list[Project]:
-        q = select(m.Project).where(m.Project.status == "publicado")
+        q = select(m.Project).where(m.Project.status == "published")
         if search:
             like = f"%{search.lower()}%"
             q = q.where(or_(func.lower(m.Project.title).like(like), func.lower(m.Project.description).like(like)))
@@ -278,7 +278,7 @@ class Query:
         dev = info.context.require("developer")
         db = info.context.db
         applied = {a.project_id for a in dev.applications}
-        candidates = [p for p in db.scalars(select(m.Project).where(m.Project.status == "publicado")).all()
+        candidates = [p for p in db.scalars(select(m.Project).where(m.Project.status == "published")).all()
                       if p.id not in applied]
         return [Recommendation(project=Project.from_model(p), score=s, matched_skills=ms)
                 for p, s, ms in recommend(dev, candidates, limit)]
@@ -301,14 +301,14 @@ class Mutation:
     def register(self, info: Info, input: RegisterInput) -> AuthPayload:
         db = info.context.db
         if not input.data_consent:
-            raise Exception("Debes autorizar el tratamiento de datos personales (Ley 1581 de 2012).")
+            raise Exception("You must authorize the processing of personal data (Law 1581 of 2012).")
         if input.role not in ("developer", "organization"):
-            raise Exception("Rol no válido.")
+            raise Exception("Invalid role.")
         if len(input.password) < 8:
-            raise Exception("La contraseña debe tener mínimo 8 caracteres.")
+            raise Exception("Password must be at least 8 characters long.")
         email = input.email.strip().lower()
         if db.scalar(select(m.User).where(m.User.email == email)):
-            raise Exception("Ya existe una cuenta con ese correo.")
+            raise Exception("An account with that email already exists.")
         u = m.User(email=email, name=input.name.strip(), role=input.role,
                    password_hash=hash_password(input.password), data_consent=True)
         db.add(u)
@@ -319,7 +319,7 @@ class Mutation:
     def login(self, info: Info, email: str, password: str) -> AuthPayload:
         u = info.context.db.scalar(select(m.User).where(m.User.email == email.strip().lower()))
         if not u or not verify_password(password, u.password_hash):
-            raise Exception("Correo o contraseña incorrectos.")
+            raise Exception("Incorrect email or password.")
         return AuthPayload(token=create_token(u.id, u.role), user=User.from_model(u))
 
     @strawberry.mutation
@@ -334,7 +334,7 @@ class Mutation:
     def create_project(self, info: Info, input: ProjectInput) -> Project:
         org = info.context.require("organization")
         if not input.title.strip() or not input.description.strip() or not input.skills:
-            raise Exception("Título, descripción y al menos una tecnología son obligatorios.")
+            raise Exception("Title, description and at least one technology are required.")
         p = m.Project(org_id=org.id, **{k: getattr(input, k) for k in (
             "title", "description", "skills", "level", "hours_per_week", "duration_weeks",
             "modality", "slots", "mentor_name")})
@@ -346,8 +346,8 @@ class Mutation:
     def set_project_status(self, info: Info, id: int, status: str) -> Project:
         org = info.context.require("organization")
         p = info.context.db.get(m.Project, id)
-        if not p or p.org_id != org.id or status not in ("publicado", "cerrado"):
-            raise Exception("Proyecto no encontrado.")
+        if not p or p.org_id != org.id or status not in ("published", "closed"):
+            raise Exception("Project not found.")
         p.status = status
         info.context.db.commit()
         return Project.from_model(p)
@@ -357,10 +357,10 @@ class Mutation:
         dev = info.context.require("developer")
         db = info.context.db
         p = db.get(m.Project, project_id)
-        if not p or p.status != "publicado":
-            raise Exception("El proyecto no está disponible.")
+        if not p or p.status != "published":
+            raise Exception("The project is not available.")
         if any(a.developer_id == dev.id for a in p.applications):
-            raise Exception("Ya te postulaste a este proyecto.")
+            raise Exception("You have already applied to this project.")
         a = m.Application(project_id=p.id, developer_id=dev.id, message=message)
         db.add(a)
         db.commit()
@@ -372,12 +372,12 @@ class Mutation:
         org = info.context.require("organization")
         db = info.context.db
         a = db.get(m.Application, id)
-        if not a or a.project.org_id != org.id or status not in ("aceptada", "rechazada"):
-            raise Exception("Postulación no encontrada.")
-        if status == "aceptada" and a.status != "aceptada":
-            accepted = sum(1 for x in a.project.applications if x.status == "aceptada")
+        if not a or a.project.org_id != org.id or status not in ("accepted", "rejected"):
+            raise Exception("Application not found.")
+        if status == "accepted" and a.status != "accepted":
+            accepted = sum(1 for x in a.project.applications if x.status == "accepted")
             if accepted >= a.project.slots:
-                raise Exception("No quedan cupos disponibles en este proyecto.")
+                raise Exception("There are no slots left in this project.")
         a.status = status
         db.commit()
         return Application.from_model(a)
@@ -387,10 +387,10 @@ class Mutation:
         dev = info.context.require("developer")
         db = info.context.db
         a = db.get(m.Application, application_id)
-        if not a or a.developer_id != dev.id or a.status != "aceptada":
-            raise Exception("Solo puedes entregar avances en proyectos donde fuiste aceptado.")
+        if not a or a.developer_id != dev.id or a.status != "accepted":
+            raise Exception("You can only submit deliveries for projects where you were accepted.")
         if not link.startswith(("http://", "https://")):
-            raise Exception("El enlace debe ser una URL válida (http/https).")
+            raise Exception("The link must be a valid URL (http/https).")
         d = m.Delivery(application_id=a.id, title=title, link=link)
         db.add(d)
         db.commit()
@@ -403,9 +403,9 @@ class Mutation:
         db = info.context.db
         d = db.get(m.Delivery, id)
         if not d or d.application.project.org_id != org.id:
-            raise Exception("Entrega no encontrada.")
-        if status not in ("aprobada", "ajustes") or not feedback.strip() or not 1 <= rating <= 5:
-            raise Exception("Indica el estado, un comentario y una calificación de 1 a 5.")
+            raise Exception("Delivery not found.")
+        if status not in ("approved", "changes_requested") or not feedback.strip() or not 1 <= rating <= 5:
+            raise Exception("Provide a status, a comment and a rating from 1 to 5.")
         d.status, d.feedback, d.rating = status, feedback, rating
         db.commit()
         return Delivery(id=d.id, title=d.title, link=d.link, status=d.status, feedback=d.feedback,

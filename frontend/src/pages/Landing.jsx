@@ -15,13 +15,13 @@ export default function Landing() {
       <header className="landing-nav">
         <Logo />
         <nav className="row">
-          <Link to="/proyectos">Explorar proyectos</Link>
+          <Link to="/projects">Explore projects</Link>
           {user ? (
-            <Link className="btn btn-primary" to="/panel">Ir a mi panel</Link>
+            <Link className="btn btn-primary" to="/dashboard">Go to my dashboard</Link>
           ) : (
             <>
-              <Link to="/login">Iniciar sesión</Link>
-              <Link className="btn btn-primary" to="/registro">Empezar gratis</Link>
+              <Link to="/login">Log in</Link>
+              <Link className="btn btn-primary" to="/register">Get started for free</Link>
             </>
           )}
         </nav>
@@ -29,46 +29,46 @@ export default function Landing() {
 
       <section className="hero">
         <div className="hero-text">
-          <span className="pill">Plataforma de internado tech para juniors</span>
-          <h1>Tu primer empleo<br /><span className="primary">tech, con experiencia real.</span></h1>
+          <span className="pill">Tech internship platform for juniors</span>
+          <h1>Your first tech job,<br /><span className="primary">with real experience.</span></h1>
           <p className="lead">
-            Conectamos desarrolladores junior con proyectos reales de empresas, supervisados por mentores.
-            Gana experiencia verificable y consigue tu primer empleo.
+            We connect junior developers with real company projects, supervised by mentors.
+            Gain verifiable experience and land your first job.
           </p>
           <div className="row">
-            <Link className="btn btn-primary btn-lg" to="/registro?rol=developer">Soy desarrollador junior</Link>
-            <Link className="btn btn-outline btn-lg" to="/registro?rol=organization">Soy empresa o institución</Link>
+            <Link className="btn btn-primary btn-lg" to="/register?role=developer">I'm a junior developer</Link>
+            <Link className="btn btn-outline btn-lg" to="/register?role=organization">I'm a company or institution</Link>
           </div>
-          <p className="muted small">Gratis para devs · Puedes explorar proyectos sin registrarte</p>
+          <p className="muted small">Free for devs · You can explore projects without signing up</p>
         </div>
         <div className="hero-card">
           <div className="card">
             <div className="row">
               <div className="avatar avatar-lg">MA</div>
               <div>
-                <strong>Matching inteligente</strong>
-                <div className="muted small">Te recomendamos proyectos según tus habilidades, nivel y disponibilidad.</div>
+                <strong>Smart matching</strong>
+                <div className="muted small">We recommend projects based on your skills, level and availability.</div>
               </div>
             </div>
           </div>
           {projects.slice(0, 2).map((p) => (
-            <Link key={p.id} to={`/proyectos/${p.id}`} className="card mini-card">
+            <Link key={p.id} to={`/projects/${p.id}`} className="card mini-card">
               <strong>{p.title}</strong>
               <div className="muted small">{p.organization.name} · {p.skills.slice(0, 3).join(', ')}</div>
             </Link>
           ))}
           <div className="card mini-card">
-            <strong>Entregas revisadas por mentores</strong>
-            <div className="muted small">Cada sprint recibe retroalimentación y calificación.</div>
+            <strong>Deliveries reviewed by mentors</strong>
+            <div className="muted small">Every sprint gets feedback and a rating.</div>
           </div>
         </div>
       </section>
 
       <section className="stats">
-        <div><b>{projects.length}</b><span>Proyectos publicados</span></div>
-        <div><b>{orgs}</b><span>Organizaciones aliadas</span></div>
-        <div><b>100 %</b><span>Proyectos supervisados</span></div>
-        <div><b>$0</b><span>Costo para desarrolladores</span></div>
+        <div><b>{projects.length}</b><span>Published projects</span></div>
+        <div><b>{orgs}</b><span>Partner organizations</span></div>
+        <div><b>100 %</b><span>Supervised projects</span></div>
+        <div><b>$0</b><span>Cost for developers</span></div>
       </section>
     </div>
   )

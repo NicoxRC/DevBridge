@@ -14,24 +14,24 @@ export default function Explore() {
   const projects = data?.projects || []
 
   return (
-    <Layout title="Explorar proyectos" subtitle={`${projects.length} proyectos disponibles`}>
+    <Layout title="Explore projects" subtitle={`${projects.length} projects available`}>
       <div className="filters">
-        <input className="search" placeholder="🔍 Buscar proyecto…" value={filters.search} onChange={set('search')} />
+        <input className="search" placeholder="🔍 Search projects…" value={filters.search} onChange={set('search')} />
         <select value={filters.skill} onChange={set('skill')}>
-          <option value="">Todas las tecnologías</option>
+          <option value="">All technologies</option>
           {(cat?.catalogs.skills || []).map((s) => <option key={s}>{s}</option>)}
         </select>
         <select value={filters.level} onChange={set('level')}>
-          <option value="">Cualquier nivel</option>
+          <option value="">Any level</option>
           {Object.entries(LEVELS).map(([k, v]) => <option key={k} value={k}>{v}</option>)}
         </select>
         <select value={filters.modality} onChange={set('modality')}>
-          <option value="">Cualquier modalidad</option>
+          <option value="">Any modality</option>
           {Object.entries(MODALITIES).map(([k, v]) => <option key={k} value={k}>{v}</option>)}
         </select>
       </div>
-      {loading && !data && <p className="muted">Cargando proyectos…</p>}
-      {!loading && projects.length === 0 && <div className="card empty">No hay proyectos con esos filtros.</div>}
+      {loading && !data && <p className="muted">Loading projects…</p>}
+      {!loading && projects.length === 0 && <div className="card empty">No projects match those filters.</div>}
       <div className="grid-2">
         {projects.map((p) => <ProjectCard key={p.id} project={p} />)}
       </div>

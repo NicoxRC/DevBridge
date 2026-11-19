@@ -55,3 +55,8 @@ devbridge-mvp/
 │       └── auth.jsx    user session
 └── docker-compose.yml  PostgreSQL for local development
 ```
+
+## Getting started
+
+- Run it locally: [docs/local-setup.md](docs/local-setup.md)
+- Contribute (branches, commits, PRs): [CONTRIBUTING.md](CONTRIBUTING.md)

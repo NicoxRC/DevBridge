@@ -84,3 +84,19 @@ git checkout trunk
 git pull --prune
 git branch -d feat/project-filters
 ```
+
+## Backend tests
+
+Unit tests use [pytest](https://docs.pytest.org/). Run them with `uv run pytest` inside `backend/`.
+The `back-ci` GitHub Actions workflow runs them, and builds the Docker image, on every PR that touches `backend/`.
+
+- **In `backend/tests/`, mirroring `app/`:** `app/auth.py` → `tests/test_auth.py`. The GraphQL API is split by
+  operation type in `tests/schema/` (`test_queries.py`, `test_mutations.py`).
+- **One `Test<Name>` class per function or resolver** (`TestScore`, `TestRegister`…).
+- **Two tests per class:** the good case and the bad case (error, permission or invalid data).
+  Add a third test only for a very specific rule worth guarding, with a `# Specific case:` comment saying why.
+- **No PostgreSQL needed:** tests run against a throwaway SQLite database that is recreated for every test.
+  The fixtures in `tests/conftest.py` give you:
+  - `developer`, `organization`, `make_user`, `make_project`, `make_application` — sample data.
+  - `gql(query, user=..., **variables)` — runs a GraphQL operation as that user (or as a visitor) and returns `data`;
+    errors are raised, so check them with `pytest.raises(Exception, match="...")`.

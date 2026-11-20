@@ -54,8 +54,6 @@ gh pr create --base trunk --fill   # or open the link GitHub prints
 
 If you already pushed the branch, push the rebased version with
 `git push --force-with-lease` (only on your own branch, never on `trunk`).
-gh pr create --base trunk --fill   # or open the link GitHub prints
-```
 
 In the PR description:
 
@@ -65,7 +63,8 @@ In the PR description:
 - Screenshots if the UI changed.
 
 Keep PRs small and focused — one feature or fix per PR. Before opening it, make sure the app
-still starts (`uv run uvicorn app.main:app --reload` and `npm run dev`) and the frontend builds (`npm run build`).
+still starts (`uv run uvicorn app.main:app --reload` and `npm run dev`) and the frontend tests pass and it builds
+(`npm test` and `npm run build`). The `front-ci` GitHub Actions workflow runs the same checks on every PR that touches `frontend/`.
 
 ## 4. Merge
 
@@ -100,3 +99,18 @@ The `back-ci` GitHub Actions workflow runs them, and builds the Docker image, on
   - `developer`, `organization`, `make_user`, `make_project`, `make_application` — sample data.
   - `gql(query, user=..., **variables)` — runs a GraphQL operation as that user (or as a visitor) and returns `data`;
     errors are raised, so check them with `pytest.raises(Exception, match="...")`.
+
+## Frontend tests
+
+Unit tests use [Vitest](https://vitest.dev/) and [Testing Library](https://testing-library.com/). Run them with
+`npm test` inside `frontend/` (`npm run test:watch` while developing).
+
+- **Next to the code:** each file gets its test beside it — `pages/Login.jsx` → `pages/Login.test.jsx`.
+- **One `describe` per component** (or hook/function), named exactly like it.
+- **Two tests per component:** the good case (it works as expected) and the bad case (error, empty or blocked state).
+  Add a third test only for a very specific rule worth guarding, and leave a `// Specific case:` comment saying why.
+- **Test what the user sees:** query by role, label or text, not by CSS classes or internals.
+- **No real API:** Apollo hooks are mocked globally. Use the helpers in `src/test/`:
+  - `apollo.js` — `mockQueries([[QUERY, { data }]])` and `mockMutation({ data | error })`.
+  - `fixtures.js` — sample users, projects, applications and deliveries (`makeProject({ slots: 0 })`).
+  - `utils.jsx` — `renderWithRouter` for components and `renderPage` for pages (shows `Moved to <url>` after a redirect).

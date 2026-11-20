@@ -236,7 +236,7 @@ const es = {
   },
 }
 
-const DICTIONARIES = { en, es }
+export const DICTIONARIES = { en, es }
 
 function initialLanguage() {
   try {
